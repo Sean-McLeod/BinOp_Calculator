@@ -1,5 +1,18 @@
 package View;
-public class CalculatorView
-{
-    // some more changesss idk just making sure we do this right
+
+import javafx.application.Application;
+import javafx.stage.Stage;
+
+import static javafx.application.Application.launch;
+
+public class CalculatorView extends Application {
+
+    public static void main(String[] args) {
+        launch(args);
+    }
+
+    @Override
+    public void start(Stage stage) throws Exception {
+        Display display = new Display(stage);
+    }
 }
