@@ -1,6 +1,6 @@
 package Model;
 
-public class Value
+public class Value implements IExpression
 {
     private double value;
 
@@ -8,7 +8,8 @@ public class Value
         this.value = value;
     }
 
-    public double evaluate() {
+    @Override
+    public double Evaluate() {
         return this.value;
     }
 
