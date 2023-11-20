@@ -14,23 +14,67 @@ public class BinOp implements IExpression {
 
 
     @Override
-    public double Evaluate() {
+    public Double Evaluate() {
         if (operation.equals("+")) {
-            return 0;
+            return Add(leftExpression.Evaluate(), rightExpression.Evaluate());
         } else if (operation.equals("-")) {
-            return 0;
+            return Subtract(leftExpression.Evaluate(), rightExpression.Evaluate());
         }
         else if (operation.equals("/")) {
-            return 0;
+            return Divide(leftExpression.Evaluate(), rightExpression.Evaluate());
         }
         else if (operation.equals("*")) {
-            return 0;
+            return Multiply(leftExpression.Evaluate(), rightExpression.Evaluate());
         }
-        else if (operation.equals("^") || operation.equals("$")) {
-            return 0;
+        else if (operation.equals("^")) {
+            return Power(leftExpression.Evaluate(), rightExpression.Evaluate());
         }
-        else {
-            return 0;
+        else if (operation.equals("$")) {
+            return Root(leftExpression.Evaluate(), rightExpression.Evaluate());
+        }
+        return null;
+    }
+
+    private Double Add(double left, double right) {
+        return left + right;
+    }
+    private Double Subtract(double left, double right) {
+        return left - right;
+    }
+
+    private Double Divide(Double left, Double right) {
+        try {
+            return left / right;
+        }
+        catch (ArithmeticException e) {
+            return null;
+        }
+    }
+
+    private Double Multiply(double left, double right) {
+        try {
+            return left * right;
+        }
+        catch (ArithmeticException e) {
+            return null;
+        }
+    }
+
+    private Double Power(double left, double right) {
+        try {
+            return Math.pow(left, right);
+        }
+        catch (ArithmeticException e) {
+            return null;
+        }
+    }
+
+    private Double Root(double left, double right) {
+        try {
+            return Math.pow(left, 1 / right);
+        }
+        catch (ArithmeticException e) {
+            return null;
         }
     }
 }

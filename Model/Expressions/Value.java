@@ -9,7 +9,7 @@ public class Value implements IExpression
     }
 
     @Override
-    public double Evaluate() {
+    public Double Evaluate() {
         return this.value;
     }
 
