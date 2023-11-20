@@ -1,4 +1,4 @@
-package Model;
+package Model.Expressions;
 
 public class Value implements IExpression
 {

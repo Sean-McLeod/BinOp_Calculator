@@ -1,4 +1,4 @@
-package Model.BinaryOperations;
+package Model.Expressions;
 
 public class Multiplication {
 }
