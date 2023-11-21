@@ -37,6 +37,6 @@ public abstract class CustomButton extends Button {
         setFont(new Font(newSize));
     }
 
-    public abstract void setUpEventHandler();
+    public abstract String setUpEventHandler();
 
 }
