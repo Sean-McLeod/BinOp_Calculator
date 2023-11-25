@@ -6,12 +6,27 @@ public class BinOp implements IExpression {
     protected IExpression rightExpression;
     private String operation;
 
+
+    public BinOp(String op) {
+        this.leftExpression = null;
+        this.operation = op;
+        this.rightExpression = null;
+    }
+
     public BinOp(IExpression left, String op, IExpression right) {
         this.leftExpression = left;
         this.operation = op;
         this.rightExpression = right;
     }
 
+    public boolean hasLeafs() {
+        return (this.rightExpression == null && this.leftExpression == null);
+    }
+
+    @Override
+    public String toString() {
+        if (this.hasLeafs()) {return operation;} else {return "" + this.Evaluate();}
+    }
 
     @Override
     public Double Evaluate() {
@@ -29,9 +44,7 @@ public class BinOp implements IExpression {
         else if (operation.equals("^")) {
             return Power(leftExpression.Evaluate(), rightExpression.Evaluate());
         }
-        else if (operation.equals("$")) {
-            return Root(leftExpression.Evaluate(), rightExpression.Evaluate());
-        }
+
         return null;
     }
 
@@ -63,15 +76,6 @@ public class BinOp implements IExpression {
     private Double Power(double left, double right) {
         try {
             return Math.pow(left, right);
-        }
-        catch (ArithmeticException e) {
-            return null;
-        }
-    }
-
-    private Double Root(double left, double right) {
-        try {
-            return Math.pow(left, 1 / right);
         }
         catch (ArithmeticException e) {
             return null;

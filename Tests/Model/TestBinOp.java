@@ -41,14 +41,6 @@ public class TestBinOp {
     }
 
     @Test
-    void testBasicRoot() {
-        Value left = new Value(4.0);
-        Value right = new Value(2.0);
-        BinOp operation = new BinOp(left, "$", right);
-        assertEquals(operation.Evaluate(), 2.0);
-    }
-
-    @Test
     void testExpressionEvaluation() {
         IExpression expression = new BinOp(new Value(3.0), "+", new BinOp(new Value(2.0), "^", new Value(2.0)));
         assertEquals(expression.Evaluate(), 7.0);
