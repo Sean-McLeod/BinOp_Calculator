@@ -1,18 +1,33 @@
 package Model;
 
-import java.util.Scanner;
+import Model.Expressions.IExpression;
+import Model.Memory.MemoryDLL;
+
+import java.lang.reflect.Array;
 
 public class CalculatorModel
 {
-    public static void main(String[] args) {
-        Scanner scanner = new Scanner(System.in);
-        System.out.print("Enter Value: ");
+    private ExpressionInterpreter interpreter = new ExpressionInterpreter();
+    private MemoryDLL memory = new MemoryDLL();
 
-        // Read user input
-        String userInput = scanner.nextLine();
-
-        scanner.close();
+    public String ExecuteAction(String userInput) {
+        if (userInput.equals("ENTER")) {
+            return "" + memory.getCurrent().Evaluate();
+        } else if (userInput.equals("DELETE")) {
+            memory.moveForward();
+            return memory.getCurrent().StringRepresentation();
+        } else if (userInput.equals("NEXT")) {
+            memory.moveForward();
+            return memory.getCurrent().StringRepresentation();
+        } else if (userInput.equals("BACK")) {
+            memory.moveBackward();
+            return memory.getCurrent().StringRepresentation();
+        }
+        else {
+            IExpression expression  = interpreter.InterpretExpression(userInput);
+            memory.addToBack(expression);
+            return "" + expression.Evaluate();
+        }
     }
-
 
 }
