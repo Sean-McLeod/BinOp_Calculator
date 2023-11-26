@@ -1,53 +1,49 @@
 package Model.Memory;
 
-import Model.Memory.MemoryNode;
 import Model.Expressions.IExpression;
-
-import java.beans.Expression;
 
 
 public class MemoryDLL {
-
-    private MemoryNode head;
-    private MemoryNode tail;
+    private MemoryNode first;
+    private MemoryNode last;
+    private MemoryNode current;
 
     public MemoryDLL() {
-        this.head = null;
-        this.tail = null;
+        this.first = null;
+        this.last = null;
+        this.current = null;
     }
 
-    public void InsertAtFront(IExpression expression) {
-        MemoryNode newNode = new MemoryNode(expression);
-
-        if (head == null) {
-            // List is empty, set both head and tail to the new node
-            head = newNode;
-            tail = newNode;
-        } else {
-            // Add the new node to the front of the list
-            newNode.next = head;
-            head.prev = newNode;
-            head = newNode;
-        }
+    public IExpression getCurrent() {
+        return current.getExpression();
     }
 
-    public IExpression traverseToIndex(int index) {
-        if (head == null) {
-            throw new IndexOutOfBoundsException("");
-        }
-
-        MemoryNode current = head;
-        int count = 0;
-
-        while (current != null && count < index) {
+    public void moveForward() {
+        if (current != null && current.next != null) {
             current = current.next;
-            count++;
         }
+    }
 
-        if (current == null) {
-            throw new IndexOutOfBoundsException("");
-        } else {
-            return current.getExpression();
+    public void moveBackward() {
+        if (current != null && current.prev != null) {
+            current = current.prev;
         }
+    }
+
+    public void addToBack(IExpression data) {
+        MemoryNode newNode = new MemoryNode(data);
+        if (isEmpty()) {
+            first = newNode;
+            current = newNode;
+            last = newNode;
+        } else {
+            newNode.prev = last;
+            last.next = newNode;
+            last = newNode;
+        }
+    }
+
+    public boolean isEmpty() {
+        return first == null;
     }
 }

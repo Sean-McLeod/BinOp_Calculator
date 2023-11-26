@@ -26,6 +26,7 @@ public class TestExpressionInterpreter {
         assertEquals(expressionInterpreter.InterpretExpression(expression).Evaluate(), 1.5);
         expression = "2^2^2";
         assertEquals(expressionInterpreter.InterpretExpression(expression).Evaluate(), 16);
+        assertEquals(expressionInterpreter.InterpretExpression(expression).StringRepresentation(), "((2.0^2.0)^2.0)");
     }
 
     @Test

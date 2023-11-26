@@ -48,6 +48,11 @@ public class BinOp implements IExpression {
         return null;
     }
 
+    @Override
+    public String StringRepresentation() {
+        return "(" + leftExpression.StringRepresentation() + operation + rightExpression.StringRepresentation() + ")";
+    }
+
     private Double Add(double left, double right) {
         return left + right;
     }

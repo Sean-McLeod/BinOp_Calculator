@@ -14,6 +14,11 @@ public class Value implements IExpression
     }
 
     @Override
+    public String StringRepresentation() {
+        return "" + value;
+    }
+
+    @Override
     public String toString() {
         return "" + this.value;
     }
