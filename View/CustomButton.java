@@ -16,8 +16,8 @@ public abstract class CustomButton extends Button {
         setPrefWidth(60);
         setPrefHeight(60);
         setTextFill(Color.WHITE);
-        setFont(Font.font(15));
-        setStyle("-fx-background-color: green;");    }
+        setFont(Font.font(20));
+        setStyle("-fx-background-color: green; -fx-background-radius: 5px;");    }
 
     public void highlightButton(){
         setOnMousePressed(event ->

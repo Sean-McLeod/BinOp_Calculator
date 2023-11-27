@@ -6,7 +6,6 @@ import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.layout.*;
 import javafx.scene.paint.Color;
-import javafx.scene.paint.Paint;
 import javafx.stage.Stage;
 
 import java.util.ArrayList;
@@ -14,7 +13,6 @@ import java.util.ArrayList;
 public class Display {
     public Stage stage; // this is the window
     public Scene scene; // need to specify root node
-    public  FlowPane flowPane; // to hold buttons
     public GridPane gridPane;
     public Label userInput; // to display the user's input
     public ArrayList<Button> numberButtons;
@@ -23,6 +21,7 @@ public class Display {
 
     public Display(Stage stage){
         this.stage = stage;
+        stage.setHeight(600);
         // set user label -- will be empty at first
         this.userInput = new Label();
 
@@ -38,13 +37,21 @@ public class Display {
      */
 
     public void initUI(){
-        this.userInput.setText(" ");
-        userInput.setBackground(Background.fill(Color.BLACK));
+        VBox root = new VBox();
+        root.setAlignment(Pos.CENTER);
+        root.setSpacing(40);
+
+        this.userInput.setText("TemporaryText 1234+-/x");
+        userInput.setStyle("-fx-font-family: 'Arial'; -fx-font-size: 20; -fx-alignment: center-right;" +
+                "-fx-padding: 15px;-fx-background-color: black; -fx-background-radius: 5px");
+        userInput.setTextFill(Color.WHITE);
         userInput.setPrefSize(340, 70);
+
+        root.getChildren().add(userInput); // add userInput Label to root node
         this.gridPane = new GridPane(); // GRIDPANE to hold items
 
         // add userInput text to gridPane:
-        gridPane.add(userInput, 0, 0, 5, 1);
+        //gridPane.add(userInput, 0, 0, 5, 1);
 
         // setting the contrains for a gridpane
         //Three columns, three rows for the GridPane
@@ -105,8 +112,10 @@ public class Display {
 
         // for debugging:
         gridPane.setGridLinesVisible(true);
+        root.getChildren().add(this.gridPane); // add buttons gridPane to root node
 
-        this.scene = new Scene(this.gridPane, 500, 1000);
+
+        this.scene = new Scene(root, 500, 1000);
         this.stage.setScene(this.scene);
         this.stage.show();
     }
