@@ -1,36 +1,37 @@
 package View;
 
+import View.Buttons.*;
 import javafx.geometry.Pos;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.layout.*;
-import javafx.scene.paint.Color;
 import javafx.stage.Stage;
 
 import java.util.ArrayList;
 
 public class Display {
-    static public Stage stage; // this is the window
-    static public Scene scene; // need to specify root node
+    public Stage stage; // this is the window
+    public Scene calcScene; // scene for calculator page
     public Scene themeScene; // scene of themes page
-    public GridPane gridPane;
-    static public Label userInput; // to display the user's input
+    private GridPane gridPane; // gridpane holding calculator buttons
+    public InputLabel userInput; // to display the user's input
     public ArrayList<Button> numberButtons;
     public ArrayList<Button> operationButtons;
-    public ArrayList<Button> funcButtons; // prev button, next button, change mode button
-    static public ArrayList<CustomButton> allButtons = new ArrayList<>(); // list containing all button objects;
+    public ArrayList<FuncButton> funcButtons; // prev button, next button, change mode button
+    public ArrayList<CustomButton> allButtons; // list containing all button objects;
 
     public Display(Stage stage){
         this.stage = stage;
         stage.setHeight(600);
         stage.setWidth(500);
         // set user label -- will be empty at first
-        this.userInput = new Label();
+        this.userInput = new InputLabel();
 
-        ArrayList<Button> numberButtons = new ArrayList<>(); // list to hold number buttons
-        ArrayList<Button> operationButtons = new ArrayList<>(); // list to hold operation buttons
-        ArrayList<Button> funcButtons = new ArrayList<>(); // list to hold functionality buttons
+        numberButtons = new ArrayList<>(); // list to hold number buttons
+        operationButtons = new ArrayList<>(); // list to hold operation buttons
+        funcButtons = new ArrayList<>(); // list to hold functionality buttons
+        allButtons = new ArrayList<>(); // list to hold functionality buttons
 
         initUI(); // show the gaphics
     }
@@ -46,12 +47,8 @@ public class Display {
         root.setStyle("-fx-background-color: #eeeeee");
 
         this.userInput.setText("TemporaryText 1234+-/x");
-        userInput.setStyle("-fx-font-family: 'Arial'; -fx-font-size: 20; -fx-alignment: center-right;" +
-                "-fx-padding: 15px;-fx-background-color: #393e46; -fx-background-radius: 10px");
-        userInput.setTextFill(Color.WHITE);
-        userInput.setPrefSize(340, 70);
-
         root.getChildren().add(userInput); // add userInput Label to root node
+
         this.gridPane = new GridPane(); // GRIDPANE to hold items
 
         // setting the contrains for a gridpane
@@ -100,12 +97,13 @@ public class Display {
         NumOpButton sub = new NumOpButton("-"); allButtons.add(sub);
         NumOpButton mul = new NumOpButton("x"); allButtons.add(mul);
         NumOpButton div = new NumOpButton("/"); allButtons.add(div);
-        NumOpButton pow = new NumOpButton("^"); allButtons.add(pow);
+        NumOpButton pow = new NumOpButton("xⁿ"); allButtons.add(pow);
         NumOpButton dec = new NumOpButton("."); allButtons.add(dec);
-        FuncButton del = new FuncButton("Del."); allButtons.add(del);
-        FuncButton equal = new FuncButton("="); allButtons.add(equal);
-        FuncButton parOpen = new FuncButton("("); allButtons.add(parOpen);
-        FuncButton parClose = new FuncButton(")"); allButtons.add(parClose);
+        FuncButton del = new FuncButton("⌫"); allButtons.add(del); funcButtons.add(del);
+        FuncButton equal = new FuncButton("="); allButtons.add(equal); funcButtons.add(equal);
+        FuncButton parOpen = new FuncButton("("); allButtons.add(parOpen); funcButtons.add(parOpen);
+        FuncButton parClose = new FuncButton(")"); allButtons.add(parClose); funcButtons.add(parClose);
+
 
         gridPane.add(parOpen, 3, 1);
         gridPane.add(sub, 3, 2);
@@ -122,28 +120,44 @@ public class Display {
         //gridPane.setGridLinesVisible(true);
         root.getChildren().add(this.gridPane); // add buttons gridPane to root node
 
-        // HBox node for theme button and history button
-        HBox root_2 = new HBox();
-        root_2.setSpacing(30);
-        root_2.setAlignment(Pos.CENTER);
-        root.getChildren().add(root_2);
+        // HBox node for theme, font-size, and history buttons
+        HBox funcPane = new HBox();
+        funcPane.setSpacing(15);
+        funcPane.setAlignment(Pos.CENTER);
+        root.getChildren().add(funcPane);
 
         //change theme button
-        createThemesScene(); // create scene for themes page in advance
-        Button changeTheme = new Button("Theme");
-        changeTheme.setPrefWidth(100);
+        createThemesScene(); // create themes scene in advance
+        FuncButton changeTheme = new FuncButton("Theme"); allButtons.add(changeTheme); funcButtons.add(changeTheme);
+        changeTheme.setPrefWidth(110);
         changeTheme.setPrefHeight(50);
-        changeTheme.setStyle("-fx-background-color: #393e46; -fx-background-radius: 5px; -fx-font-size:15; -fx-text-fill: white");
-        root_2.getChildren().add(changeTheme);
-        changeTheme.setOnAction(event -> stage.setScene(themeScene)); //changeThemes button handler
+        funcPane.getChildren().add(changeTheme);
+        //changeThemes button handler
+        changeTheme.setOnAction(event -> stage.setScene(themeScene));
 
-        this.scene = new Scene(root, 500, 1000);
-        this.stage.setScene(this.scene);
+        //history traversal button
+        FuncButton historyButton = new FuncButton("History"); allButtons.add(historyButton); funcButtons.add(historyButton);
+        historyButton.setPrefWidth(110);
+        historyButton.setPrefHeight(50);
+        funcPane.getChildren().add(historyButton);
+
+        //font size button
+        FuncButton fontSizeButton = new FuncButton("Size"); allButtons.add(fontSizeButton); funcButtons.add(fontSizeButton);
+        fontSizeButton.setPrefWidth(110);
+        fontSizeButton.setPrefHeight(50);
+        funcPane.getChildren().add(fontSizeButton);
+        //font size button handler
+        fontSizeButton.setOnAction(event -> {
+            for (CustomButton b: allButtons) {b.increaseFontSize();}
+            userInput.increaseFontSize();});
+
+        this.calcScene = new Scene(root, 500, 1000);
+        this.stage.setScene(this.calcScene);
         this.stage.show();
     }
 
     /**
-     * Create themes page
+     * Create themes scene
      */
     public void createThemesScene(){
         VBox root = new VBox();
@@ -151,18 +165,15 @@ public class Display {
         root.setSpacing(30);
 
         // Various theme buttons
-        ThemeButton darkTheme = new ThemeButton("Dark", "black", "grey", "white"); allButtons.add(darkTheme);
-        ThemeButton lightTheme = new ThemeButton("Light", "white", "grey", "#c1c1c1"); allButtons.add(lightTheme);
-        ThemeButton forestTheme = new ThemeButton("Forest", "#388e3c", "#8bc34a", "#c5f0a4"); allButtons.add(forestTheme);
-        ThemeButton earthTheme = new ThemeButton("Earth", "#d3bd9a", "#674f04", "#402a23"); allButtons.add(earthTheme);
-        ThemeButton oceanTheme = new ThemeButton("Ocean", "#eeeeee", "#0092ca", "#393e46"); allButtons.add(oceanTheme);
+        ThemeButton darkTheme = new ThemeButton(this, "Dark", "black", "grey", "white"); allButtons.add(darkTheme);
+        ThemeButton lightTheme = new ThemeButton(this, "Light", "white", "grey", "#c1c1c1"); allButtons.add(lightTheme);
+        ThemeButton forestTheme = new ThemeButton(this, "Forest", "#388e3c", "#8bc34a", "#c5f0a4"); allButtons.add(forestTheme);
+        ThemeButton earthTheme = new ThemeButton(this, "Earth", "#d3bd9a", "#674f04", "#402a23"); allButtons.add(earthTheme);
+        ThemeButton oceanTheme = new ThemeButton(this, "Ocean", "#eeeeee", "#0092ca", "#393e46"); allButtons.add(oceanTheme);
 
-        //button to change scene back to calculator
-        Button backButton = new Button("Back to Calculator");
-        backButton.setPrefWidth(200);
-        backButton.setPrefHeight(50);
-        backButton.setStyle("-fx-background-color: #393e46; -fx-background-radius: 5px; -fx-font-size:15; -fx-text-fill: white");
-        backButton.setOnAction(event2 -> stage.setScene(scene));
+        //back button to change scene back to calculator
+        FuncButton backButton = new FuncButton("←"); allButtons.add(backButton); funcButtons.add(backButton);
+        backButton.setOnAction(event2 -> stage.setScene(calcScene));
 
         //add buttons to screen
         root.getChildren().add(darkTheme);

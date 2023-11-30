@@ -1,12 +1,12 @@
-package View;
+package View.Buttons;
 
 public class NumOpButton extends CustomButton {
 
     public NumOpButton(String text) {
         super(text);
+        setUpEventHandler();
     }
 
-    @Override
     public String setUpEventHandler() {
         // when clicked, return the value of the button
         // will change later

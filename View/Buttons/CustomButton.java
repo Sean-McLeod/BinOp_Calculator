@@ -1,4 +1,4 @@
-package View;
+package View.Buttons;
 
 import javafx.scene.control.Button;
 import javafx.scene.paint.Color;
@@ -6,6 +6,7 @@ import javafx.scene.text.Font;
 
 public abstract class CustomButton extends Button {
     public String originalColour; //original colour of button in CSS
+    private int fontSize = 15; //font size of button text
 
     public CustomButton(String text) {
         super(text);
@@ -17,13 +18,16 @@ public abstract class CustomButton extends Button {
         setPrefWidth(60);
         setPrefHeight(60);
         setTextFill(Color.WHITE);
-        setFont(Font.font(20));
+        setFont(Font.font(fontSize));
         setOriginalColour("#0092ca");
-        }
+    }
 
+    /**
+     * accessibility feature. Highlight buttons with clicked and hovered.
+     */
     public void highlightButton(){
         setOnMousePressed(event ->
-                setStyle("-fx-background-color: orange;"));
+                setStyle("-fx-font-size: " + fontSize + "; -fx-background-color: orange; -fx-background-radius: 10px"));
         setOnMouseReleased(event ->
                 setOriginalColour(originalColour));
         setOnMouseEntered(event -> {
@@ -34,17 +38,18 @@ public abstract class CustomButton extends Button {
             setOriginalColour(originalColour);});
     }
 
+    /**
+     * increase font size of the label text in increments of 5
+     */
     public void increaseFontSize(){
-        double newSize = getFont().getSize() + 5;
-        setFont(new Font(newSize));
+        fontSize = (fontSize < 25) ? fontSize + 5 : 15;
+        setStyle("-fx-font-size: " + fontSize + "; -fx-background-color: " + originalColour + "; -fx-background-radius: 10px");
     }
 
     public void setOriginalColour(String colour){
         this.originalColour = colour;
-        setStyle("-fx-background-color:"+ colour +";-fx-background-radius: 10px;");
+        setStyle("-fx-font-size: " + fontSize + "; -fx-background-color: " + originalColour + "; -fx-background-radius: 10px");
         highlightButton();
     }
-
-    public abstract String setUpEventHandler();
 
 }
