@@ -35,11 +35,15 @@ public class ExpressionInterpreter {
         while (ContainsSymbol(splitExpression, "^") && splitExpression.size() > 1) {
             ConstructExpression(splitExpression, "^");
         }
-        while (ContainsSymbol(splitExpression, "*") && splitExpression.size() > 1) {
-            ConstructExpression(splitExpression, "*");
-        }
-        while (ContainsSymbol(splitExpression, "/") && splitExpression.size() > 1) {
-            ConstructExpression(splitExpression, "/");
+        while ((ContainsSymbol(splitExpression, "*") || (ContainsSymbol(splitExpression, "/"))) && splitExpression.size() > 1) {
+            if (ContainsSymbol(splitExpression, "*") && (ContainsSymbol(splitExpression, "/"))) {
+                String firstAppears = FirstAppearingSymbol(splitExpression, "*", "/");
+                ConstructExpression(splitExpression, firstAppears);
+            } else if (ContainsSymbol(splitExpression, "*")) {
+                ConstructExpression(splitExpression, "*");
+            } else {
+                ConstructExpression(splitExpression, "/");
+            }
         }
         while (ContainsSymbol(splitExpression, "+") && splitExpression.size() > 1) {
             ConstructExpression(splitExpression, "+");
@@ -49,6 +53,18 @@ public class ExpressionInterpreter {
         }
 
         return splitExpression.get(0);
+    }
+
+    private String FirstAppearingSymbol(ArrayList<IExpression> splitExpression, String symbolX, String symbolY) {
+        for (IExpression exp: splitExpression) {
+            if (exp.toString().equals(symbolX)) {
+                return symbolX;
+            } else if (exp.toString().equals(symbolY)) {
+                return symbolY;
+            }
+        }
+
+        return null;
     }
 
     private ArrayList<IExpression> ConstructExpression(ArrayList<IExpression> splitExpression, String symbol) {
