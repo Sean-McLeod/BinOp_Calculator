@@ -20,8 +20,10 @@ public class Display {
     public Stage stage; // this is the window
     public Scene calcScene; // scene for calculator page
     public Scene themeScene; // scene of themes page
+    public Scene historyScene; // scene of history traversal page
     private GridPane gridPane; // gridpane holding calculator buttons
     public InputLabel userInput; // to display the user's input
+    public InputLabel historyLabel; //to display history of expressions
     public ArrayList<NumOpButton> numberButtons;
     public ArrayList<NumOpButton> operationButtons;
     public ArrayList<FuncButton> funcButtons; // prev button, next button, change mode button
@@ -33,6 +35,7 @@ public class Display {
         stage.setWidth(500);
         // set user label -- will be empty at first
         this.userInput = new InputLabel();
+        this.historyLabel = new InputLabel();
 
         this.numberButtons = new ArrayList<NumOpButton>(); // list to hold number buttons
         this.operationButtons = new ArrayList<NumOpButton>(); // list to hold operation buttons
@@ -161,10 +164,13 @@ public class Display {
         changeTheme.setOnAction(event -> stage.setScene(themeScene));
 
         //history traversal button
+        createHistoryScene(); // create history scene in advance
         FuncButton historyButton = new FuncButton("History"); allButtons.add(historyButton); funcButtons.add(historyButton);
         historyButton.setPrefWidth(110);
         historyButton.setPrefHeight(50);
         funcPane.getChildren().add(historyButton);
+        //historyButton handler
+        historyButton.setOnAction(event -> stage.setScene(historyScene));
 
         //font size button
         FuncButton fontSizeButton = new FuncButton("Size"); allButtons.add(fontSizeButton); funcButtons.add(fontSizeButton);
@@ -174,7 +180,8 @@ public class Display {
         //font size button handler
         fontSizeButton.setOnAction(event -> {
             for (CustomButton b: allButtons) {b.increaseFontSize();}
-            userInput.increaseFontSize();});
+            userInput.increaseFontSize();
+            historyLabel.increaseFontSize();});
 
         this.calcScene = new Scene(root, 500, 1000);
         this.stage.setScene(this.calcScene);
@@ -198,7 +205,7 @@ public class Display {
 
         //back button to change scene back to calculator
         FuncButton backButton = new FuncButton("←"); allButtons.add(backButton); funcButtons.add(backButton);
-        backButton.setOnAction(event2 -> stage.setScene(calcScene));
+        backButton.setOnAction(event -> stage.setScene(calcScene));
 
         //add buttons to screen
         root.getChildren().add(darkTheme);
@@ -239,5 +246,42 @@ public class Display {
      */
     public void sendText() {
         // pass
+    }
+
+    /**
+     * Create scene for history traversal
+     */
+    public void createHistoryScene() {
+        VBox root = new VBox();
+        root.setAlignment(Pos.CENTER);
+        root.setSpacing(30);
+
+        //label to view history of expressions
+        this.historyLabel.setText("TempText");
+        root.getChildren().add(historyLabel);
+
+        //history traversal buttons to check out previous and next nodes, delete a node
+        FuncButton prevButton = new FuncButton("Prev"); allButtons.add(prevButton); funcButtons.add(prevButton);
+        prevButton.setPrefWidth(110);
+        prevButton.setPrefHeight(50);
+        FuncButton nextButton = new FuncButton("Next"); allButtons.add(nextButton); funcButtons.add(nextButton);
+        nextButton.setPrefWidth(110);
+        nextButton.setPrefHeight(50);
+        FuncButton delButton = new FuncButton("Del."); allButtons.add(delButton); funcButtons.add(delButton);
+        delButton.setPrefWidth(110);
+        delButton.setPrefHeight(50);
+
+        //back to calculator button
+        FuncButton backButton = new FuncButton("←"); allButtons.add(backButton); funcButtons.add(backButton);
+        backButton.setOnAction(event -> stage.setScene(calcScene));
+        backButton.setPrefWidth(110);
+        backButton.setPrefHeight(50);
+
+        root.getChildren().add(prevButton);
+        root.getChildren().add(nextButton);
+        root.getChildren().add(delButton);
+        root.getChildren().add(backButton);
+
+        this.historyScene = new Scene(root);
     }
 }
