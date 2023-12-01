@@ -31,9 +31,11 @@ public class ThemeButton extends CustomButton{
             //change background colour of all scenes
             display.themeScene.getRoot().setStyle("-fx-background-color:" +a + ";");
             display.calcScene.getRoot().setStyle("-fx-background-color:" +a + ";");
+            display.historyScene.getRoot().setStyle("-fx-background-color:" +a + ";");
 
-            //change background and text colour of user input label
+            //change background and text colour of user input and history labels
             display.userInput.setLabelStyle(c, display.userInput.fontSize,a);
+            display.historyLabel.setLabelStyle(c, display.userInput.fontSize,a);
         });
     }
 }
