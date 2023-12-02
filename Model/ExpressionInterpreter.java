@@ -115,7 +115,7 @@ public class ExpressionInterpreter {
 
         // Define regular expressions for splitting numbers and operations
         String numberRegex = "(?<=[^\\.\\d])|(?=[^\\.\\d])"; // Split on non-digit characters
-        String operationRegex = "(?<=\\d)|(?=\\d)";          // Split on digits
+        String operationRegex = "[+\\-*/]";          // Split on digits
 
         // Combine the regular expressions
         String regex = String.format("(%s)|(%s)", numberRegex, operationRegex);
