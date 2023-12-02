@@ -24,7 +24,6 @@ public class ExpressionInterpreter {
             } catch (Exception e) {
                 expressionsSplit.add(new BinOp(s));
             }
-
         }
         return expressionsSplit;
     }
@@ -45,13 +44,16 @@ public class ExpressionInterpreter {
                 ConstructExpression(splitExpression, "/");
             }
         }
-        while (ContainsSymbol(splitExpression, "+") && splitExpression.size() > 1) {
-            ConstructExpression(splitExpression, "+");
+        while ((ContainsSymbol(splitExpression, "+") || (ContainsSymbol(splitExpression, "-"))) && splitExpression.size() > 1) {
+            if (ContainsSymbol(splitExpression, "+") && (ContainsSymbol(splitExpression, "-"))) {
+                String firstAppears = FirstAppearingSymbol(splitExpression, "+", "-");
+                ConstructExpression(splitExpression, firstAppears);
+            } else if (ContainsSymbol(splitExpression, "+")) {
+                ConstructExpression(splitExpression, "+");
+            } else {
+                ConstructExpression(splitExpression, "-");
+            }
         }
-        while (ContainsSymbol(splitExpression, "-") && splitExpression.size() > 1) {
-            ConstructExpression(splitExpression, "-");
-        }
-
         return splitExpression.get(0);
     }
 
@@ -63,7 +65,6 @@ public class ExpressionInterpreter {
                 return symbolY;
             }
         }
-
         return null;
     }
 
