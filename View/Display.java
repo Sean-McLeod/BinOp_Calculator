@@ -11,10 +11,13 @@ import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.*;
 import javafx.scene.paint.Color;
 import javafx.stage.Stage;
+
+import java.io.*;
 import java.util.ArrayList;
 import java.util.Objects;
 
 import java.util.ArrayList;
+import java.util.Scanner;
 
 public class Display {
     public Stage stage; // this is the window
@@ -28,8 +31,9 @@ public class Display {
     public ArrayList<NumOpButton> operationButtons;
     public ArrayList<FuncButton> funcButtons; // prev button, next button, change mode button
     public ArrayList<CustomButton> allButtons; // list containing all button objects;
+    private String currentMarker;
 
-    public Display(Stage stage){
+    public Display(Stage stage) throws IOException {
         this.stage = stage;
         stage.setHeight(600);
         stage.setWidth(500);
@@ -42,6 +46,8 @@ public class Display {
         this.funcButtons = new ArrayList<FuncButton>(); // list to hold functionality buttons
         allButtons = new ArrayList<CustomButton>(); // list to hold functionality buttons
 
+        this.currentMarker = "";  // our current place in the saved.txt file, that is to be created
+
         initUI(); // show the gaphics
     }
 
@@ -49,7 +55,7 @@ public class Display {
      * build the GUI!
      */
 
-    public void initUI(){
+    public void initUI() throws IOException {
         VBox root = new VBox();
         root.setAlignment(Pos.CENTER);
         root.setSpacing(40);
@@ -118,13 +124,23 @@ public class Display {
 
         // function buttons
         NumOpButton del = new NumOpButton("⌫"); allButtons.add(del); operationButtons.add(del);
-        NumOpButton equal = new NumOpButton("="); allButtons.add(equal); operationButtons.add(equal);
-    // add an event to all the buttons (define what they do when they're clicked)
+        NumOpButton equal = new NumOpButton("="); allButtons.add(equal);
+        // add an event to all the buttons (define what they do when they're clicked)
         for (Button button: operationButtons){
             button.setOnAction(mouseEvent -> updateUserText(button.getText()));
         }
-    // handle for deleting text
+        // handle for deleting text
         del.setOnAction(mouseEvent -> updateUserText("DEL"));
+        // handle for eq button
+        equal.setOnAction(mouseEvent -> {
+            try {
+                equalButtonHandle();
+            } catch (FileNotFoundException e) { // in case the file doesnt exist
+                throw new RuntimeException(e);
+            } catch (IOException e) {
+                throw new RuntimeException(e);
+            }
+        });
 
         gridPane.add(parOpen, 3, 1);
         gridPane.add(sub, 3, 2);
@@ -170,7 +186,13 @@ public class Display {
         historyButton.setPrefHeight(50);
         funcPane.getChildren().add(historyButton);
         //historyButton handler
-        historyButton.setOnAction(event -> stage.setScene(historyScene));
+        historyButton.setOnAction(event -> {
+            try {
+                historyHandle();
+            } catch (IOException e) {
+                throw new RuntimeException(e);
+            }
+        });
 
         //font size button
         FuncButton fontSizeButton = new FuncButton("Size"); allButtons.add(fontSizeButton); funcButtons.add(fontSizeButton);
@@ -218,7 +240,9 @@ public class Display {
         this.themeScene = new Scene(root);
     }
 
-    /**
+    // BUTTON HANDLERS:
+
+    /** Handle for the "NumOp", "del" and "clear" buttons.
      * update and display the user text when given a new input!
      * if the input is an empty string, delete one line
      * if the input is one space, clear the userinput
@@ -243,30 +267,168 @@ public class Display {
     /**
      * Handle for equal button
      * send the userInput text to the controller
+     * save the input to a file that can be accessed through history?
      */
-    public void sendText() {
+    public void equalButtonHandle() throws IOException{
+        // write to file
+        if (!new File("View/saved.txt").exists()){
+            new File("View/saved.txt").createNewFile(); // creates the file if it does not exist
+        }
+        try{
+            File file = new File("View/saved.txt");
+            FileWriter writer = new FileWriter(file, true);
+            BufferedWriter bufferedWriter = new BufferedWriter(writer);
+            if (file.length() == 0){
+                bufferedWriter.write(userInput.getText()); // write directly
+            }
+            else{
+                bufferedWriter.write("\n"); // new line
+                bufferedWriter.write(userInput.getText()); // write userInput to file
+            }
+            bufferedWriter.close(); // close file
+        } catch (IOException e) { // buffered reader exception
+            throw new RuntimeException(e);
+        }
+        // send to MODEL
+    }
+
+    public void historyHandle() throws IOException {
+        stage.setScene(historyScene); // switch to History page
+        // if there is an input saved, display the first input from "saved.txt"
+        if (new File("View/saved.txt").exists() && new File("View/saved.txt").length() > 0) {
+            try {
+                FileReader reader = new FileReader("View/saved.txt");
+                BufferedReader bufferedReader = new BufferedReader(reader);
+                bufferedReader.mark(0);
+                // read input from the file
+                // catch exceptions incase the file or directory doesnt exist!!!
+                bufferedReader.reset();
+                String newLabel = bufferedReader.readLine();
+                currentMarker = newLabel;
+                this.historyLabel.setText(newLabel);
+                reader.close();
+            } catch (IOException e){
+                throw new RuntimeException(e);
+            }
+        }
+        else{ // create new file and display empty textbox
+            new File("View/saved.txt").createNewFile();
+            this.historyLabel.setText("");
+        }
+    }
+
+    /**
+     * Handle for del button in "History" menu
+     * delete the current input from the file
+     */
+    public void delHandle() throws FileNotFoundException {
+        // pass
+    }
+
+    /**
+     * Handle for prev button in "History" menu
+     * go to the prev line in the file
+     */
+    public void prevHandle() throws IOException {
+        // if there is an input saved, go through the file until marker is reached
+        if (new File("View/saved.txt").exists() && new File("View/saved.txt").length() > 0) {
+            try{
+                File f = new File("View/saved.txt"); // create or find saved input file
+                // read input from the file
+                // catch exceptions incase the file or directory doesnt exist!!!
+                FileReader reader = new FileReader(f.getPath());
+                BufferedReader bufferedReader = new BufferedReader(reader);
+                // skip until before the current marker reached, then display the current line
+                String curr = bufferedReader.readLine(); // current string
+                String next = bufferedReader.readLine();;  // the next line after current string
+                if (!Objects.equals(curr, currentMarker)){ // curr = currentMarker means there is no previous
+                    while (!Objects.equals(next, currentMarker)){
+                        curr = next;
+                        next = bufferedReader.readLine();
+                    }
+                }
+                currentMarker = curr;
+                if (currentMarker != null){ // input saved is valid, and not the end of the file
+                    this.historyLabel.setText(currentMarker);
+                } // we dont wanna display an empty string so we keep the input as it is
+                bufferedReader.close(); // close file
+            } catch (IOException e){
+                throw new RuntimeException(e);
+            }
+
+        }
+    }
+
+    /**
+     * Handle for next button in "History" menu
+     * go to the next input in the file
+     */
+    public void nextHandle() throws IOException {
+        // if there is an input saved, display the first input from "saved.txt"
+        if (new File("View/saved.txt").exists() && new File("View/saved.txt").length() > 0) {
+            try{
+                File f = new File("View/saved.txt"); // create or find saved input file
+                // read input from the file
+                // catch exceptions incase the file or directory doesnt exist!!!
+                FileReader reader = new FileReader(f.getPath());
+                BufferedReader bufferedReader = new BufferedReader(reader);
+                // skip until current marker reached, then display the next line
+                String next = bufferedReader.readLine();
+                while (!Objects.equals(next, currentMarker)){
+                    next = bufferedReader.readLine();
+                }
+                currentMarker = bufferedReader.readLine();
+                if (currentMarker != null){ // input saved is valid, and not the end of the file
+                    this.historyLabel.setText(currentMarker);
+                } // we dont wanna display an empty string so we keep the input as it is
+                bufferedReader.close(); // close file
+            } catch (IOException e){
+                throw new RuntimeException(e);
+            }
+
+        }
+    }
+
+    // TODO: Create a "select" button that selects a saved input and sees its result
+    public void selectHandle() throws FileNotFoundException {
         // pass
     }
 
     /**
      * Create scene for history traversal
      */
-    public void createHistoryScene() {
+    public void createHistoryScene() throws IOException {
         VBox root = new VBox();
         root.setAlignment(Pos.CENTER);
         root.setSpacing(30);
 
         //label to view history of expressions
-        this.historyLabel.setText("TempText");
+
+        historyHandle();
+
         root.getChildren().add(historyLabel);
 
         //history traversal buttons to check out previous and next nodes, delete a node
         FuncButton prevButton = new FuncButton("Prev"); allButtons.add(prevButton); funcButtons.add(prevButton);
         prevButton.setPrefWidth(110);
         prevButton.setPrefHeight(50);
+        prevButton.setOnAction(event -> { // set prev button handler, may throw exception
+            try {
+                prevHandle();
+            } catch (IOException e) {
+                throw new RuntimeException(e);
+            }
+        });
         FuncButton nextButton = new FuncButton("Next"); allButtons.add(nextButton); funcButtons.add(nextButton);
         nextButton.setPrefWidth(110);
         nextButton.setPrefHeight(50);
+        nextButton.setOnAction(event -> { // set next button handler, may throw exception
+            try {
+                nextHandle();
+            } catch (IOException e) {
+                throw new RuntimeException(e);
+            }
+        });
         FuncButton delButton = new FuncButton("Del."); allButtons.add(delButton); funcButtons.add(delButton);
         delButton.setPrefWidth(110);
         delButton.setPrefHeight(50);
