@@ -14,13 +14,22 @@ public class CalculatorModel
         if (userInput.equals("ENTER")) {
             return "" + memory.getCurrent().Evaluate();
         } else if (userInput.equals("DELETE")) {
-            memory.moveForward();
+            memory.delete();
+            if (memory.isEmpty()) {
+                return null;
+            }
             return memory.getCurrent().StringRepresentation() + " = " + memory.getCurrent().Evaluate();
         } else if (userInput.equals("NEXT")) {
             memory.moveForward();
+            if (memory.isEmpty()) {
+                return null;
+            }
             return memory.getCurrent().StringRepresentation() + " = " + memory.getCurrent().Evaluate();
         } else if (userInput.equals("PREV")) {
             memory.moveBackward();
+            if (memory.isEmpty()) {
+                return null;
+            }
             return memory.getCurrent().StringRepresentation() + " = " + memory.getCurrent().Evaluate();
         }
         else {

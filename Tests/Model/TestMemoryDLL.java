@@ -5,10 +5,33 @@ import Model.Memory.MemoryDLL;
 import Model.Memory.MemoryNode;
 import Model.Expressions.BinOp;
 import Model.Expressions.Value;
+import Model.CalculatorModel;
 
 import static org.junit.jupiter.api.Assertions.*;
 
 public class TestMemoryDLL {
+    @Test
+    void testDelete() {
+        CalculatorModel model = new CalculatorModel();
+        assertNull(model.ExecuteAction("DELETE"));  // case where there are no nodes
+        String myExpr1 = "1+1";
+        String myExpr2 = "1+2";
+        String myExpr3 = "1+3";
+
+        assertEquals("2.0", model.ExecuteAction(myExpr1));  // add one node
+        assertNull(model.ExecuteAction("DELETE"));  // case where there is only one node
+
+        assertEquals("2.0", model.ExecuteAction(myExpr1));  // add one node
+        assertEquals("3.0", model.ExecuteAction(myExpr2));  // add one node
+        assertEquals("4.0", model.ExecuteAction(myExpr3));  // add one node
+
+        assertEquals("(1.0+2.0) = 3.0", model.ExecuteAction("NEXT"));
+        assertEquals("(1.0+3.0) = 4.0", model.ExecuteAction("DELETE"));  // case where selected node is in between
+
+        assertEquals("(1.0+1.0) = 2.0", model.ExecuteAction("DELETE"));  // case where this node is the last node
+
+        assertNull(model.ExecuteAction("DELETE"));  // case where this node is the last node
+    }
 
     @Test
     void testTrackCurrent() {
