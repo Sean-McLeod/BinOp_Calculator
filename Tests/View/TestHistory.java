@@ -1,10 +1,6 @@
 package Tests.View;
-import View.CalculatorView;
-import View.Display;
 
 import org.junit.jupiter.api.Test;
-
-import static org.junit.jupiter.api.Assertions.*;
 
 /**
  * Test that commands in History button work accordingly, and that FileNotFound

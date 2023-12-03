@@ -15,13 +15,13 @@ public class CalculatorModel
             return "" + memory.getCurrent().Evaluate();
         } else if (userInput.equals("DELETE")) {
             memory.moveForward();
-            return memory.getCurrent().StringRepresentation();
+            return memory.getCurrent().StringRepresentation() + " = " + memory.getCurrent().Evaluate();
         } else if (userInput.equals("NEXT")) {
             memory.moveForward();
-            return memory.getCurrent().StringRepresentation();
-        } else if (userInput.equals("BACK")) {
+            return memory.getCurrent().StringRepresentation() + " = " + memory.getCurrent().Evaluate();
+        } else if (userInput.equals("PREV")) {
             memory.moveBackward();
-            return memory.getCurrent().StringRepresentation();
+            return memory.getCurrent().StringRepresentation() + " = " + memory.getCurrent().Evaluate();
         }
         else {
             IExpression expression  = interpreter.InterpretExpression(userInput);

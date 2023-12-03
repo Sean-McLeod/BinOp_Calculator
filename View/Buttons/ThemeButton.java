@@ -1,13 +1,13 @@
 package View.Buttons;
 
-import View.Display;
+import View.CalculatorView;
 
 public class ThemeButton extends CustomButton{
-    final private Display display; // display of the calculator
+    final private CalculatorView display; // display of the calculator
     final private String a; // background colour
     final private String b; // button colour
     final private String c; // userInputLabel colour
-    public ThemeButton(Display display, String text, String a, String b, String c){
+    public ThemeButton(CalculatorView display, String text, String a, String b, String c){
         super(text);
         setPrefWidth(200);
 
