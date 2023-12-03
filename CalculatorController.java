@@ -3,6 +3,8 @@ import View.CalculatorView;
 import javafx.application.Application;
 import javafx.stage.Stage;
 
+import java.util.Objects;
+
 public class CalculatorController extends Application
 {
     public static void main(String[] args) {
@@ -11,10 +13,7 @@ public class CalculatorController extends Application
 
     @Override
     public void start(Stage stage) throws Exception {
-        CalculatorView display = new CalculatorView(stage);
         CalculatorModel model = new CalculatorModel();
-        // request = display.MakeARequest
-        // output = model.ExectuteRequest(request)
-        // view.execture(output)
+        CalculatorView display = new CalculatorView(stage, model);
     }
 }

@@ -1,5 +1,6 @@
 package View;
 
+import Model.CalculatorModel;
 import View.Buttons.*;
 import javafx.geometry.Pos;
 import javafx.scene.Scene;
@@ -7,6 +8,7 @@ import javafx.scene.control.Button;
 import javafx.scene.layout.*;
 import javafx.stage.Stage;
 
+import java.awt.event.MouseEvent;
 import java.io.*;
 import java.util.ArrayList;
 import java.util.Objects;
@@ -19,13 +21,13 @@ public class CalculatorView {
     private GridPane gridPane; // gridpane holding calculator buttons
     public InputLabel userInput; // to display the user's input
     public InputLabel historyLabel; //to display history of expressions
-    public ArrayList<NumOpButton> numberButtons;
-    public ArrayList<NumOpButton> operationButtons;
+    public ArrayList<NumOpButton> numberButtons; // to hold number buttons
+    public ArrayList<NumOpButton> operationButtons; // to hold operation buttons
     public ArrayList<FuncButton> funcButtons; // prev button, next button, change mode button
     public ArrayList<CustomButton> allButtons; // list containing all button objects;
-    private String currentMarker;
+    private CalculatorModel model; // the model
 
-    public CalculatorView(Stage stage) throws IOException {
+    public CalculatorView(Stage stage, CalculatorModel model) {
         this.stage = stage;
         stage.setHeight(600);
         stage.setWidth(500);
@@ -38,7 +40,7 @@ public class CalculatorView {
         this.funcButtons = new ArrayList<FuncButton>(); // list to hold functionality buttons
         allButtons = new ArrayList<CustomButton>(); // list to hold functionality buttons
 
-        this.currentMarker = "";  // our current place in the saved.txt file, that is to be created
+        this.model = model;
 
         initUI(); // show the gaphics
     }
@@ -47,7 +49,7 @@ public class CalculatorView {
      * build the GUI!
      */
 
-    public void initUI() throws IOException {
+    public void initUI() {
         VBox root = new VBox();
         root.setAlignment(Pos.CENTER);
         root.setSpacing(40);
@@ -107,7 +109,7 @@ public class CalculatorView {
         // operation buttons
         NumOpButton add = new NumOpButton("+"); allButtons.add(add); operationButtons.add(add);
         NumOpButton sub = new NumOpButton("-"); allButtons.add(sub); operationButtons.add(sub);
-        NumOpButton mul = new NumOpButton("x"); allButtons.add(mul); operationButtons.add(mul);
+        NumOpButton mul = new NumOpButton("*"); allButtons.add(mul); operationButtons.add(mul);
         NumOpButton div = new NumOpButton("/"); allButtons.add(div); operationButtons.add(div);
         NumOpButton pow = new NumOpButton("^"); allButtons.add(pow); operationButtons.add(pow);
         NumOpButton dec = new NumOpButton("."); allButtons.add(dec); operationButtons.add(dec);
@@ -124,15 +126,7 @@ public class CalculatorView {
         // handle for deleting text
         del.setOnAction(mouseEvent -> updateUserText("DEL"));
         // handle for eq button
-        equal.setOnAction(mouseEvent -> {
-            try {
-                equalButtonHandle();
-            } catch (FileNotFoundException e) { // in case the file doesnt exist
-                throw new RuntimeException(e);
-            } catch (IOException e) {
-                throw new RuntimeException(e);
-            }
-        });
+        equal.setOnAction(mouseEvent -> equalButtonHandle());
 
         gridPane.add(parOpen, 3, 1);
         gridPane.add(sub, 3, 2);
@@ -178,13 +172,7 @@ public class CalculatorView {
         historyButton.setPrefHeight(50);
         funcPane.getChildren().add(historyButton);
         //historyButton handler
-        historyButton.setOnAction(event -> {
-            try {
-                historyHandle();
-            } catch (IOException e) {
-                throw new RuntimeException(e);
-            }
-        });
+        historyButton.setOnAction(vent -> historyHandle());
 
         //font size button
         FuncButton fontSizeButton = new FuncButton("Size"); allButtons.add(fontSizeButton); funcButtons.add(fontSizeButton);
@@ -261,94 +249,38 @@ public class CalculatorView {
      * send the userInput text to the controller
      * save the input to a file that can be accessed through history?
      */
-    public void equalButtonHandle() throws IOException{
-        // write to file
-        if (!new File("View/saved.txt").exists()){
-            new File("View/saved.txt").createNewFile(); // creates the file if it does not exist
-        }
-        try{
-            File file = new File("View/saved.txt");
-            FileWriter writer = new FileWriter(file, true);
-            BufferedWriter bufferedWriter = new BufferedWriter(writer);
-            if (file.length() == 0){
-                bufferedWriter.write(userInput.getText()); // write directly
-            }
-            else{
-                bufferedWriter.write("\n"); // new line
-                bufferedWriter.write(userInput.getText()); // write userInput to file
-            }
-            bufferedWriter.close(); // close file
-        } catch (IOException e) { // buffered reader exception
-            throw new RuntimeException(e);
-        }
+    public void equalButtonHandle(){
         // send to MODEL
+        String request = userInput.getText();
+        String output = model.ExecuteAction(request);
+        userInput.setText(output); // DISPLAY OUTPUT?
+
     }
 
-    public void historyHandle() throws IOException {
+    public void historyHandle() {
         stage.setScene(historyScene); // switch to History page
-        // if there is an input saved, display the first input from "saved.txt"
-        if (new File("View/saved.txt").exists() && new File("View/saved.txt").length() > 0) {
-            try {
-                FileReader reader = new FileReader("View/saved.txt");
-                BufferedReader bufferedReader = new BufferedReader(reader);
-                bufferedReader.mark(0);
-                // read input from the file
-                // catch exceptions incase the file or directory doesnt exist!!!
-                bufferedReader.reset();
-                String newLabel = bufferedReader.readLine();
-                currentMarker = newLabel;
-                this.historyLabel.setText(newLabel);
-                reader.close();
-            } catch (IOException e){
-                throw new RuntimeException(e);
-            }
-        }
-        else{ // create new file and display empty textbox
-            new File("View/saved.txt").createNewFile();
-            this.historyLabel.setText("");
-        }
+        // Display current input
+        historyLabel.setText(userInput.getText());
     }
 
     /**
      * Handle for del button in "History" menu
      * delete the current input from the file
      */
-    public void delHandle() throws FileNotFoundException {
-        // pass
+    public void delHandle() {
+        // delete the current input from the DDL
+        historyLabel.setText(model.ExecuteAction("DELETE"));
     }
 
     /**
      * Handle for prev button in "History" menu
      * go to the prev line in the file
      */
-    public void prevHandle() throws IOException {
-        // if there is an input saved, go through the file until marker is reached
-        if (new File("View/saved.txt").exists() && new File("View/saved.txt").length() > 0) {
-            try{
-                File f = new File("View/saved.txt"); // create or find saved input file
-                // read input from the file
-                // catch exceptions incase the file or directory doesnt exist!!!
-                FileReader reader = new FileReader(f.getPath());
-                BufferedReader bufferedReader = new BufferedReader(reader);
-                // skip until before the current marker reached, then display the current line
-                String curr = bufferedReader.readLine(); // current string
-                String next = bufferedReader.readLine();;  // the next line after current string
-                if (!Objects.equals(curr, currentMarker)){ // curr = currentMarker means there is no previous
-                    while (!Objects.equals(next, currentMarker)){
-                        curr = next;
-                        next = bufferedReader.readLine();
-                    }
-                }
-                currentMarker = curr;
-                if (currentMarker != null){ // input saved is valid, and not the end of the file
-                    this.historyLabel.setText(currentMarker);
-                } // we dont wanna display an empty string so we keep the input as it is
-                bufferedReader.close(); // close file
-            } catch (IOException e){
-                throw new RuntimeException(e);
-            }
-
-        }
+    public void prevHandle() {
+        // get the previous input in the DDL
+        // format: expression = result
+        // have an evaluate button for this?
+        historyLabel.setText(model.ExecuteAction("PREV"));
     }
 
     /**
@@ -356,40 +288,14 @@ public class CalculatorView {
      * go to the next input in the file
      */
     public void nextHandle() throws IOException {
-        // if there is an input saved, display the first input from "saved.txt"
-        if (new File("View/saved.txt").exists() && new File("View/saved.txt").length() > 0) {
-            try{
-                File f = new File("View/saved.txt"); // create or find saved input file
-                // read input from the file
-                // catch exceptions incase the file or directory doesnt exist!!!
-                FileReader reader = new FileReader(f.getPath());
-                BufferedReader bufferedReader = new BufferedReader(reader);
-                // skip until current marker reached, then display the next line
-                String next = bufferedReader.readLine();
-                while (!Objects.equals(next, currentMarker)){
-                    next = bufferedReader.readLine();
-                }
-                currentMarker = bufferedReader.readLine();
-                if (currentMarker != null){ // input saved is valid, and not the end of the file
-                    this.historyLabel.setText(currentMarker);
-                } // we dont wanna display an empty string so we keep the input as it is
-                bufferedReader.close(); // close file
-            } catch (IOException e){
-                throw new RuntimeException(e);
-            }
-
-        }
-    }
-
-    // TODO: Create a "select" button that selects a saved input and sees its result
-    public void selectHandle() throws FileNotFoundException {
-        // pass
+        // get the next input in the DDLE
+        historyLabel.setText(model.ExecuteAction("NEXT"));
     }
 
     /**
      * Create scene for history traversal
      */
-    public void createHistoryScene() throws IOException {
+    public void createHistoryScene() {
         VBox root = new VBox();
         root.setAlignment(Pos.CENTER);
         root.setSpacing(30);
@@ -404,13 +310,7 @@ public class CalculatorView {
         FuncButton prevButton = new FuncButton("Prev"); allButtons.add(prevButton); funcButtons.add(prevButton);
         prevButton.setPrefWidth(110);
         prevButton.setPrefHeight(50);
-        prevButton.setOnAction(event -> { // set prev button handler, may throw exception
-            try {
-                prevHandle();
-            } catch (IOException e) {
-                throw new RuntimeException(e);
-            }
-        });
+        prevButton.setOnAction(event -> prevHandle());
         FuncButton nextButton = new FuncButton("Next"); allButtons.add(nextButton); funcButtons.add(nextButton);
         nextButton.setPrefWidth(110);
         nextButton.setPrefHeight(50);
@@ -424,6 +324,8 @@ public class CalculatorView {
         FuncButton delButton = new FuncButton("Del."); allButtons.add(delButton); funcButtons.add(delButton);
         delButton.setPrefWidth(110);
         delButton.setPrefHeight(50);
+        // set handle
+        delButton.setOnAction(MouseEvent -> delHandle());
 
         //back to calculator button
         FuncButton backButton = new FuncButton("←"); allButtons.add(backButton); funcButtons.add(backButton);
