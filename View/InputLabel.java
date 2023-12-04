@@ -24,7 +24,7 @@ public class InputLabel extends Label {
         this.fontSize = fontSize;
         this.backColour = backColour;
         setPrefSize(340, 70);
-        setStyle("-fx-font-family: 'Arial'; -fx-font-size:"+fontSize+"; -fx-alignment: center-right; -fx-padding: 15px;" +
+        setStyle("-fx-font-family: 'Monaco'; -fx-font-size:"+fontSize+"; -fx-alignment: center-right; -fx-padding: 15px;" +
                 "-fx-background-color:"+backColour+"; -fx-background-radius: 10px; -fx-text-fill:"+fontColour+";");
     }
 
@@ -33,7 +33,7 @@ public class InputLabel extends Label {
      */
     public void increaseFontSize(){
         fontSize = (fontSize < 25) ? fontSize + 5 : 15;
-        setStyle("-fx-font-family: 'Arial'; -fx-font-size:"+fontSize+"; -fx-alignment: center-right; -fx-padding: 15px;" +
+        setStyle("-fx-font-family: 'Monaco'; -fx-font-size:"+fontSize+"; -fx-alignment: center-right; -fx-padding: 15px;" +
                 "-fx-background-color:"+backColour+"; -fx-background-radius: 10px; -fx-text-fill:"+fontColour+";");
     }
 }

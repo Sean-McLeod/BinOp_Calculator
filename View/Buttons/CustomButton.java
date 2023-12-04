@@ -32,7 +32,8 @@ public abstract class CustomButton extends Button {
                 setOriginalColour(originalColour));
         setOnMouseEntered(event -> {
             setOpacity(0.8);
-            setStyle("-fx-border-color: orange; -fx-border-width: 2px; -fx-background-color:" + originalColour + ";");});
+            setStyle("-fx-border-color: orange; -fx-border-radius: 7px; -fx-background-radius: 10px; " +
+                    "-fx-border-width: 2px; -fx-background-color:" + originalColour + ";");});
         setOnMouseExited(event -> {
             setOpacity(1.0);
             setOriginalColour(originalColour);});
