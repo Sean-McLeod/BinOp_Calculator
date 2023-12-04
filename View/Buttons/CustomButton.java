@@ -4,10 +4,15 @@ import javafx.scene.control.Button;
 import javafx.scene.paint.Color;
 import javafx.scene.text.Font;
 
-public abstract class CustomButton extends Button {
+public class CustomButton extends Button {
     public String originalColour; //original colour of button in CSS
     private int fontSize = 15; //font size of button text
 
+    /**
+     * CustomButton Constructor
+     * __________________________
+     * Initializes attributes
+     */
     public CustomButton(String text) {
         super(text);
         setDefaultStyle();

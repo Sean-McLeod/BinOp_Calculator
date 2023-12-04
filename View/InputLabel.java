@@ -7,12 +7,13 @@ public class InputLabel extends Label {
     public String fontColour; //font colour of label text
     public String backColour; //background colour of label
 
+    /**
+     * InputLabel Constructor
+     * __________________________
+     * Initializes attributes
+     */
     public InputLabel(){
         super();
-        setLabelStyle("#393e46", 15, "white");
-    }
-    public InputLabel(String text){
-        super(text);
         setLabelStyle("#393e46", 15, "white");
     }
 
