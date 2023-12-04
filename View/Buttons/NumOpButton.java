@@ -1,15 +1,14 @@
 package View.Buttons;
 
 public class NumOpButton extends CustomButton {
-
+    String NumOp;
+    /**
+     * FuncButton Constructor
+     * __________________________
+     * Initializes attributes
+     */
     public NumOpButton(String text) {
         super(text);
-        setUpEventHandler();
-    }
-
-    public String setUpEventHandler() {
-        // when clicked, return the value of the button
-        // will change later
-        return this.getText();
+        this.NumOp = text;
     }
 }

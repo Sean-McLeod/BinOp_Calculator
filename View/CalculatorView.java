@@ -7,12 +7,14 @@ import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.layout.*;
 import javafx.stage.Stage;
-
-import java.awt.event.MouseEvent;
 import java.io.*;
 import java.util.ArrayList;
 import java.util.Objects;
 
+/**
+ * Class CalculatorView.
+ * This is the Class that will visualize the calculator model.
+ */
 public class CalculatorView {
     public Stage stage; // this is the window
     public Scene calcScene; // scene for calculator page
@@ -27,6 +29,11 @@ public class CalculatorView {
     public ArrayList<CustomButton> allButtons; // list containing all button objects;
     private CalculatorModel model; // the model
 
+    /**
+     * CalculatorView Constructor
+     * __________________________
+     * Initializes attributes
+     */
     public CalculatorView(Stage stage, CalculatorModel model) {
         this.stage = stage;
         stage.setHeight(600);
@@ -149,7 +156,7 @@ public class CalculatorView {
         funcPane.setSpacing(15);
         funcPane.setAlignment(Pos.CENTER);
         root.getChildren().add(funcPane);
-         // to clear the userInput
+        // to clear the userInput
         FuncButton clear = new FuncButton("Clear"); allButtons.add(clear);
         clear.setPrefWidth(110);
         clear.setPrefHeight(50);
@@ -229,9 +236,10 @@ public class CalculatorView {
      * if the input is one space, clear the userinput
      */
     public void updateUserText(String input){
+        if (Objects.equals(userInput.getText(), "Error")) {userInput.setText("");} // erase "Error" message
         // if string = DEL, means delete button was called
         if (Objects.equals(input, "DEL")){
-            // check if string is non empty
+            // check if string is non-empty
             if (!userInput.getText().isEmpty()){
                 String text = userInput.getText().substring(0, userInput.getText().length() - 1);
                 userInput.setText(text);
@@ -252,9 +260,11 @@ public class CalculatorView {
      */
     public void equalButtonHandle(){
         // send to MODEL
-        String request = userInput.getText();
-        String output = model.ExecuteAction(request);
-        userInput.setText(output); // DISPLAY OUTPUT?
+        try{
+            String request = userInput.getText();
+            String output = model.ExecuteAction(request);
+            userInput.setText(output); // DISPLAY OUTPUT?
+        } catch (Exception e) {userInput.setText("Error");}
 
     }
 
