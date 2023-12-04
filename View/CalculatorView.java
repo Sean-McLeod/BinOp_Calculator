@@ -106,15 +106,12 @@ public class CalculatorView {
         gridPane.add(num0, 1, 4);
 
         // operation buttons
-        // operation buttons
         NumOpButton add = new NumOpButton("+"); allButtons.add(add); operationButtons.add(add);
         NumOpButton sub = new NumOpButton("-"); allButtons.add(sub); operationButtons.add(sub);
         NumOpButton mul = new NumOpButton("*"); allButtons.add(mul); operationButtons.add(mul);
         NumOpButton div = new NumOpButton("/"); allButtons.add(div); operationButtons.add(div);
         NumOpButton pow = new NumOpButton("^"); allButtons.add(pow); operationButtons.add(pow);
         NumOpButton dec = new NumOpButton("."); allButtons.add(dec); operationButtons.add(dec);
-        NumOpButton parOpen = new NumOpButton("("); allButtons.add(parOpen); operationButtons.add(parOpen);
-        NumOpButton parClose = new NumOpButton(")"); allButtons.add(parClose); operationButtons.add(parClose);
 
         // function buttons
         NumOpButton del = new NumOpButton("⌫"); allButtons.add(del); operationButtons.add(del);
@@ -128,16 +125,20 @@ public class CalculatorView {
         // handle for eq button
         equal.setOnAction(mouseEvent -> equalButtonHandle());
 
-        gridPane.add(parOpen, 3, 1);
+        // set equal and delete button to take 2 cells space
+        GridPane.setColumnSpan(equal, 2);
+        GridPane.setColumnSpan(del, 2);
+        equal.setPrefWidth(130);
+        del.setPrefWidth(130);
+
         gridPane.add(sub, 3, 2);
         gridPane.add(mul, 3, 3);
         gridPane.add(add, 4, 2);
-        gridPane.add(parClose, 4, 1);
         gridPane.add(div, 4, 3);
-        gridPane.add(del, 0, 4);
+        gridPane.add(dec, 0, 4);
         gridPane.add(pow, 2, 4);
-        gridPane.add(dec, 3, 4);
-        gridPane.add(equal, 4, 4);
+        gridPane.add(del, 3, 1);
+        gridPane.add(equal, 3, 4);
 
         // for debugging:
         //gridPane.setGridLinesVisible(true);
