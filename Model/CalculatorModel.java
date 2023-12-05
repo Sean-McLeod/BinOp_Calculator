@@ -5,6 +5,10 @@ import Model.Memory.MemoryDLL;
 
 import java.lang.reflect.Array;
 
+/**
+ * Class CalculatorModel
+ * Responsible for the core processing of a calculator
+ */
 public class CalculatorModel
 {
     private ExpressionInterpreter interpreter = new ExpressionInterpreter();
