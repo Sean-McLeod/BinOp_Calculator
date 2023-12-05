@@ -11,6 +11,11 @@ public class CalculatorController extends Application
         launch(args);
     }
 
+    /***
+     * Run program fucntion which intilizes and the model and view of the program
+     * @param stage A valid stage object
+     * @throws Exception
+     */
     @Override
     public void start(Stage stage) throws Exception {
         CalculatorModel model = new CalculatorModel();
